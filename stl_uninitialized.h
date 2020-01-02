@@ -180,6 +180,7 @@ inline void uninitialized_fill(_ForwardIter __first,
 
 // Valid if copy construction is equivalent to assignment, and if the
 //  destructor is trivial.
+//  POD数据类型填充
 template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter
 __uninitialized_fill_n_aux(_ForwardIter __first, _Size __n,
@@ -188,6 +189,7 @@ __uninitialized_fill_n_aux(_ForwardIter __first, _Size __n,
   return fill_n(__first, __n, __x);
 }
 
+//非POD数据类型需要逐个调用构造函数
 template <class _ForwardIter, class _Size, class _Tp>
 _ForwardIter
 __uninitialized_fill_n_aux(_ForwardIter __first, _Size __n,
@@ -207,6 +209,7 @@ inline _ForwardIter
 __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x, _Tp1*)
 {
   typedef typename __type_traits<_Tp1>::is_POD_type _Is_POD;
+  //针对是否POD类型走不同的初始化路径
   return __uninitialized_fill_n_aux(__first, __n, __x, _Is_POD());
 }
 

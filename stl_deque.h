@@ -80,12 +80,14 @@ inline size_t __deque_buf_size(size_t __size) {
   return __size < 512 ? size_t(512 / __size) : size_t(1);
 }
 
+//未继承std::iterator
 template <class _Tp, class _Ref, class _Ptr>
 struct _Deque_iterator {
   typedef _Deque_iterator<_Tp, _Tp&, _Tp*>             iterator;
   typedef _Deque_iterator<_Tp, const _Tp&, const _Tp*> const_iterator;
   static size_t _S_buffer_size() { return __deque_buf_size(sizeof(_Tp)); }
 
+  //由于未继承，所以必须自我实现5个必要的迭代器型别
   typedef random_access_iterator_tag iterator_category;
   typedef _Tp value_type;
   typedef _Ptr pointer;
@@ -96,10 +98,11 @@ struct _Deque_iterator {
 
   typedef _Deque_iterator _Self;
 
-  _Tp* _M_cur;
-  _Tp* _M_first;
-  _Tp* _M_last;
-  _Map_pointer _M_node;
+  //保持与容器的连接
+  _Tp* _M_cur;  //指向缓冲区当前元素
+  _Tp* _M_first;//指向缓冲区头
+  _Tp* _M_last; //指向缓冲区尾
+  _Map_pointer _M_node; //指向管控中心
 
   _Deque_iterator(_Tp* __x, _Map_pointer __y) 
     : _M_cur(__x), _M_first(*__y),
@@ -349,7 +352,9 @@ protected:
   enum { _S_initial_map_size = 8 };
 
 protected:
+  //指向map, map是块连续空间，其内的每个元素都是一个指针(节点)，指向一块缓冲区
   _Tp** _M_map;
+  //map 内可容纳多少元素
   size_t _M_map_size;  
   iterator _M_start;
   iterator _M_finish;
@@ -459,6 +464,7 @@ public:                         // Iterators
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 
 protected:                      // Internal typedefs
+  //元素指针的指针
   typedef pointer* _Map_pointer;
   static size_t _S_buffer_size() { return __deque_buf_size(sizeof(_Tp)); }
 

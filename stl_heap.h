@@ -43,13 +43,15 @@ void
 __push_heap(_RandomAccessIterator __first,
             _Distance __holeIndex, _Distance __topIndex, _Tp __value)
 {
+    //找出父节点
   _Distance __parent = (__holeIndex - 1) / 2;
   while (__holeIndex > __topIndex && *(__first + __parent) < __value) {
-    *(__first + __holeIndex) = *(__first + __parent);
-    __holeIndex = __parent;
-    __parent = (__holeIndex - 1) / 2;
+      //当尚未到达顶端且父节点小于新值
+    *(__first + __holeIndex) = *(__first + __parent); //令洞值为父值
+    __holeIndex = __parent; //调整洞号，向上提升至父节点
+    __parent = (__holeIndex - 1) / 2; //新洞的父节点
   }    
-  *(__first + __holeIndex) = __value;
+  *(__first + __holeIndex) = __value; //令洞值为新值，完成插入操作
 }
 
 template <class _RandomAccessIterator, class _Distance, class _Tp>
@@ -114,18 +116,23 @@ __adjust_heap(_RandomAccessIterator __first, _Distance __holeIndex,
               _Distance __len, _Tp __value)
 {
   _Distance __topIndex = __holeIndex;
-  _Distance __secondChild = 2 * __holeIndex + 2;
+  _Distance __secondChild = 2 * __holeIndex + 2; //洞节点之右节点
   while (__secondChild < __len) {
+      //比较洞值之左右节点, secondChild代表较大节点
     if (*(__first + __secondChild) < *(__first + (__secondChild - 1)))
       __secondChild--;
+    //令较大节点为洞值，再令洞号下移至较大节点处
     *(__first + __holeIndex) = *(__first + __secondChild);
     __holeIndex = __secondChild;
+    //找出新洞节点的右子节点
     __secondChild = 2 * (__secondChild + 1);
   }
-  if (__secondChild == __len) {
+  if (__secondChild == __len) { //没有右子节点，只有左子节点
+      //令左子节点为洞值, 再下移洞号
     *(__first + __holeIndex) = *(__first + (__secondChild - 1));
     __holeIndex = __secondChild - 1;
   }
+
   __push_heap(__first, __holeIndex, __topIndex, __value);
 }
 

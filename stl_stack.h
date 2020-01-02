@@ -81,11 +81,13 @@ public:
   typedef typename _Sequence::reference       reference;
   typedef typename _Sequence::const_reference const_reference;
 protected:
+  //底层容器
   _Sequence c;
 public:
   stack() : c() {}
   explicit stack(const _Sequence& __s) : c(__s) {}
 
+  //完全利用Squence即deque操作完成相关操作
   bool empty() const { return c.empty(); }
   size_type size() const { return c.size(); }
   reference top() { return c.back(); }

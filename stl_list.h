@@ -156,8 +156,10 @@ public:
   _List_alloc_base(const allocator_type& __a) : _Node_allocator(__a) {}
 
 protected:
+  //配置一个空间节点
   _List_node<_Tp>* _M_get_node()
    { return _Node_allocator.allocate(1); }
+  //释放一个空间节点
   void _M_put_node(_List_node<_Tp>* __p)
     { _Node_allocator.deallocate(__p, 1); }
 
@@ -244,6 +246,7 @@ protected:
 
 #endif /* __STL_USE_STD_ALLOCATORS */
 
+//清除链表
 template <class _Tp, class _Alloc>
 void 
 _List_base<_Tp,_Alloc>::clear() 
@@ -306,6 +309,7 @@ protected:
 #endif /* __STL_HAS_NAMESPACES */
 
 protected:
+  //构造一个新节点
   _Node* _M_create_node(const _Tp& __x)
   {
     _Node* __p = _M_get_node();
@@ -329,6 +333,7 @@ protected:
 public:
   explicit list(const allocator_type& __a = allocator_type()) : _Base(__a) {}
 
+  //_M_node为尾部空节点，以此实现前闭后开区间，链表为双向循环链表
   iterator begin()             { return (_Node*)(_M_node->_M_next); }
   const_iterator begin() const { return (_Node*)(_M_node->_M_next); }
 
@@ -353,8 +358,10 @@ public:
   }
   size_type max_size() const { return size_type(-1); }
 
+  //取头节点值
   reference front() { return *begin(); }
   const_reference front() const { return *begin(); }
+  //取为节点值
   reference back() { return *(--end()); }
   const_reference back() const { return *(--end()); }
 
@@ -398,11 +405,14 @@ public:
     { _M_fill_insert(__pos, __n, __x); }
   void _M_fill_insert(iterator __pos, size_type __n, const _Tp& __x); 
 
+  //头部插入节点
   void push_front(const _Tp& __x) { insert(begin(), __x); }
   void push_front() {insert(begin());}
+  //尾端插入节点
   void push_back(const _Tp& __x) { insert(end(), __x); }
   void push_back() {insert(end());}
 
+  //删除节点
   iterator erase(iterator __position) {
     _List_node_base* __next_node = __position._M_node->_M_next;
     _List_node_base* __prev_node = __position._M_node->_M_prev;
@@ -419,7 +429,9 @@ public:
   void resize(size_type __new_size, const _Tp& __x);
   void resize(size_type __new_size) { this->resize(__new_size, _Tp()); }
 
+  //删除头节点
   void pop_front() { erase(begin()); }
+  //删除尾节点
   void pop_back() { 
     iterator __tmp = end();
     erase(--__tmp);
@@ -454,6 +466,7 @@ public:
     { this->insert(begin(), __first, __last); }
 
 #endif /* __STL_MEMBER_TEMPLATES */
+  //构造链表
   list(const list<_Tp, _Alloc>& __x) : _Base(__x.get_allocator())
     { insert(begin(), __x.begin(), __x.end()); }
 
@@ -490,6 +503,7 @@ public:
 #endif /* __STL_MEMBER_TEMPLATES */
 
 protected:
+  //将[first, last)元素移动到position之前
   void transfer(iterator __position, iterator __first, iterator __last) {
     if (__position != __last) {
       // Remove [first, last) from its old position.
@@ -720,6 +734,7 @@ void list<_Tp, _Alloc>::remove(const _Tp& __value)
   }
 }
 
+//删除连续重复元素
 template <class _Tp, class _Alloc>
 void list<_Tp, _Alloc>::unique()
 {

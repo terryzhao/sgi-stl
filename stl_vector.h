@@ -138,10 +138,11 @@ public:
   ~_Vector_base() { _M_deallocate(_M_start, _M_end_of_storage - _M_start); }
 
 protected:
-  _Tp* _M_start;
-  _Tp* _M_finish;
-  _Tp* _M_end_of_storage;
+  _Tp* _M_start; //目前使用空间头
+  _Tp* _M_finish;//目前使用空间尾
+  _Tp* _M_end_of_storage; //目前可用空间尾
 
+  //空间配置器
   typedef simple_alloc<_Tp, _Alloc> _M_data_allocator;
   _Tp* _M_allocate(size_t __n)
     { return _M_data_allocator::allocate(__n); }
@@ -331,11 +332,12 @@ public:
 
 #endif /* __STL_MEMBER_TEMPLATES */
 
-  reference front() { return *begin(); }
+  reference front() { return *begin(); } //第一个元素
   const_reference front() const { return *begin(); }
-  reference back() { return *(end() - 1); }
+  reference back() { return *(end() - 1); } //最后一个元素
   const_reference back() const { return *(end() - 1); }
 
+  //元素插入最尾端
   void push_back(const _Tp& __x) {
     if (_M_finish != _M_end_of_storage) {
       construct(_M_finish, __x);
@@ -407,13 +409,15 @@ public:
 
   void _M_fill_insert (iterator __pos, size_type __n, const _Tp& __x);
 
+  //从最尾端取出元素
   void pop_back() {
     --_M_finish;
     destroy(_M_finish);
   }
+  //清除某位置上的元素
   iterator erase(iterator __position) {
     if (__position + 1 != end())
-      copy(__position + 1, _M_finish, __position);
+      copy(__position + 1, _M_finish, __position); //后续元素向前移动
     --_M_finish;
     destroy(_M_finish);
     return __position;

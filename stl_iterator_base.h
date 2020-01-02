@@ -39,6 +39,7 @@
 
 __STL_BEGIN_NAMESPACE
 
+//五种迭代器类型
 struct input_iterator_tag {};
 struct output_iterator_tag {};
 struct forward_iterator_tag : public input_iterator_tag {};
@@ -92,6 +93,7 @@ template <class _Tp, class _Distance> struct random_access_iterator {
 };
 
 #ifdef __STL_USE_NAMESPACES
+//为避免自建iterator是遗漏， 最好继承下面的iterator
 template <class _Category, class _Tp, class _Distance = ptrdiff_t,
           class _Pointer = _Tp*, class _Reference = _Tp&>
 struct iterator {
@@ -105,6 +107,7 @@ struct iterator {
 
 #ifdef __STL_CLASS_PARTIAL_SPECIALIZATION
 
+//榨汁机traits
 template <class _Iterator>
 struct iterator_traits {
   typedef typename _Iterator::iterator_category iterator_category;
@@ -114,6 +117,7 @@ struct iterator_traits {
   typedef typename _Iterator::reference         reference;
 };
 
+//下面两个是针对native这只设计的两个特化版本
 template <class _Tp>
 struct iterator_traits<_Tp*> {
   typedef random_access_iterator_tag iterator_category;
@@ -139,6 +143,7 @@ struct iterator_traits<const _Tp*> {
 
 // We introduce internal names for these functions.
 
+//可以很方便的决定某个迭代器类型(category)
 template <class _Iter>
 inline typename iterator_traits<_Iter>::iterator_category
 __iterator_category(const _Iter&)
@@ -147,6 +152,7 @@ __iterator_category(const _Iter&)
   return _Category();
 }
 
+//可以方便地决定某个迭代器(distance type)
 template <class _Iter>
 inline typename iterator_traits<_Iter>::difference_type*
 __distance_type(const _Iter&)
@@ -154,6 +160,7 @@ __distance_type(const _Iter&)
   return static_cast<typename iterator_traits<_Iter>::difference_type*>(0);
 }
 
+//可以方便地决定某个迭代器的 value_type
 template <class _Iter>
 inline typename iterator_traits<_Iter>::value_type*
 __value_type(const _Iter&)
@@ -264,6 +271,7 @@ inline ptrdiff_t* distance_type(const _Tp*) { return (ptrdiff_t*)(0); }
 
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 
+//以下是整组distance函数
 template <class _InputIterator, class _Distance>
 inline void __distance(_InputIterator __first, _InputIterator __last,
                        _Distance& __n, input_iterator_tag)
@@ -320,6 +328,7 @@ distance(_InputIterator __first, _InputIterator __last) {
 
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 
+//以下是整组advance函数
 template <class _InputIter, class _Distance>
 inline void __advance(_InputIter& __i, _Distance __n, input_iterator_tag) {
   while (__n--) ++__i;
